@@ -1,0 +1,12 @@
+# Runtime artifacts produced by the scripts and the eval harness.
+# The score history (eval/baselines/*.tsv) is meant to be committed; everything
+# else here is local run output.
+.gates/
+eval/runs/
+
+# Python test artifacts left behind when a judge reproduces tests.
+__pycache__/
+.pytest_cache/
+*.pyc
+.pytest_cache/
+__pycache__/

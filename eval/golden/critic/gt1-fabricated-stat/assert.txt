@@ -1,0 +1,3 @@
+MUST:(fabricat|unverif|unsourced|no source|no citation|cannot verify|apocryphal|made up|invented|dubious|no such study)
+MUST:(Major|MAJOR|major)
+MUST:(847|Brightmoor)

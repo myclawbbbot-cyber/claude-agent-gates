@@ -3,6 +3,19 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.1] - 2026-07-13
+
+### Added
+
+- **`docs/CONTEXT-COST.md`** - why the dominant cost of running these judges is
+  usually your own always-on context, not the judge prompts. Documents the
+  subagent bootstrap mechanism (subagents inherit the full memory hierarchy, per
+  the official docs), the `paths:` frontmatter fix for path-scoped rules, the
+  explicit-`tools:` and Explore/Plan levers, one measured before/after
+  (~71k -> ~13k subagent bootstrap; n=1, illustrative, measure your own), and the
+  known open bugs on path-scoped loading.
+- README section pointing at it, for anyone who finds gating expensive.
+
 ## [0.1.0] - 2026-07-12
 
 First public release.

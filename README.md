@@ -51,6 +51,7 @@ output.
   code-reviewer.md  # a neutral example agent to adapt
   fact-checker.md   # a neutral example agent to adapt
 docs/GOVERNANCE.md  # the five load-bearing rules + the literature behind them
+docs/CONTEXT-COST.md # why gating looks expensive, and the documented fix
 scripts/
   review.sh         # run the gate against a diff/dir/file, exit on the verdict
   verdict.sh        # parse a review, exit 0/1 (fail-closed), escalate after 2 FAILs
@@ -162,6 +163,21 @@ Other knobs (all optional):
 - `GATES_CLAUDE_BIN` - path to the `claude` binary if it is not on `PATH`.
 - `GATES_STATE_DIR` - where the FAIL-streak and last review are stored (default
   `.gates/`); give each deliverable its own dir for per-deliverable streak tracking.
+
+## If gating feels expensive, read this first
+
+Every subagent - every gate run, and every golden task in the eval - starts with
+a fresh context that includes **your entire always-on memory hierarchy**
+(`CLAUDE.md`, project rules, and so on). That is documented behavior, and it means
+the cost of running these judges is usually dominated by *your* setup, not by the
+judge prompts (~1,100-1,500 tokens each).
+
+Rules that carry `paths:` frontmatter load only when a matching file is touched;
+rules without it are always-on and ride into every subagent. In one measured setup,
+scoping 18 unscoped rules cut subagent bootstrap from roughly 71k to roughly 13k
+tokens. That is n=1 and illustrative - **measure your own** before believing it.
+
+Mechanism, levers, the measurement, and the known bugs: [docs/CONTEXT-COST.md](docs/CONTEXT-COST.md).
 
 ## License
 

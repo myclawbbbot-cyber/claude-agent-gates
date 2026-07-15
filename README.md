@@ -50,8 +50,12 @@ output.
   critic.md         # the standing red team, with the verbatim-escalation contract
   code-reviewer.md  # a neutral example agent to adapt
   fact-checker.md   # a neutral example agent to adapt
+  bulk-worker.md    # the cheap mechanical fan-out lane (model-pinned, four-field handoff)
 docs/GOVERNANCE.md  # the five load-bearing rules + the literature behind them
 docs/CONTEXT-COST.md # why gating looks expensive, and the documented fix
+docs/TOKEN-ECONOMY.md # instrument-first token accounting: rotation criteria, tripwires, dispatch discipline
+docs/PROJECT-MODE.md  # the three-gate project lifecycle: strategy -> plan -> execute
+docs/SUBAGENT-ARCHITECTURE.md # roles, model tiers and quota buckets, the dispatch contract
 scripts/
   review.sh         # run the gate against a diff/dir/file, exit on the verdict
   verdict.sh        # parse a review, exit 0/1 (fail-closed), escalate after 2 FAILs
@@ -178,6 +182,26 @@ scoping 18 unscoped rules cut subagent bootstrap from roughly 71k to roughly 13k
 tokens. That is n=1 and illustrative - **measure your own** before believing it.
 
 Mechanism, levers, the measurement, and the known bugs: [docs/CONTEXT-COST.md](docs/CONTEXT-COST.md).
+
+## Beyond the gate: running the whole shop
+
+Three companion documents generalize the same evidence-first stance from a
+single gate to a standing multi-agent setup. Same honesty policy throughout:
+every number is n=1 from one measured environment - measure your own.
+
+- [docs/SUBAGENT-ARCHITECTURE.md](docs/SUBAGENT-ARCHITECTURE.md) - a small
+  orchestrator over specialist roles: judges never write, model tiers pinned
+  per role (quota-bucket economics), and the dispatch contract with the
+  four-field handoff. Ships a working example: `.claude/agents/bulk-worker.md`.
+- [docs/PROJECT-MODE.md](docs/PROJECT-MODE.md) - the three-gate lifecycle
+  (strategy -> plan -> execute) for work that is substantial or hard to
+  reverse: red-team the direction, pre-approve the dangerous operations,
+  and require an explicit "go" - refining the plan is not authorization.
+- [docs/TOKEN-ECONOMY.md](docs/TOKEN-ECONOMY.md) - instrument-first token
+  accounting from the transcripts you already have: session-rotation
+  criteria (the mega-session tax), tripwire families, dispatch cost
+  discipline, and a documented live incident of a stale dashboard almost
+  shipping a fix to a non-problem.
 
 ## License
 

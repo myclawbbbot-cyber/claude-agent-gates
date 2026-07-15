@@ -3,6 +3,34 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-07-16
+
+### Added
+
+- **`docs/TOKEN-ECONOMY.md`** - instrument-first token accounting for a
+  multi-agent setup: transcripts as an event-level ledger (collector ->
+  SQLite -> scorecard -> tripwires), six tripwire families with thresholds,
+  the mega-session tax and event-triggered session-rotation criteria,
+  dispatch cost discipline, and a documented live incident where a stale
+  dashboard (no data-freshness line) nearly shipped a fix to a routing leak
+  that did not exist.
+- **`docs/PROJECT-MODE.md`** - the three-gate project lifecycle
+  (strategy -> plan -> execute), each phase ending in a human gate:
+  direction red-teamed and acceptance restated by the human; pre-approvals
+  enumerated at plan time; execution on an explicit "go" only. Documents the
+  two anti-patterns the structure blocks (retroactive completeness,
+  mechanism built for imagined needs).
+- **`docs/SUBAGENT-ARCHITECTURE.md`** - the shop around the judges: a small
+  orchestrator over narrow-charter roles, judges never write, model tiers
+  pinned per role with quota-bucket economics, the dispatch contract, and
+  the four-field handoff. Includes the verify-the-pin-from-transcripts and
+  judge-routing-by-workload habits.
+- **`.claude/agents/bulk-worker.md`** - a shipped example of the cheap
+  mechanical fan-out lane: model-pinned, spec-is-the-contract, raw results
+  only, report-the-misses, four-field handoff.
+- README: "Beyond the gate" section linking the three companion documents;
+  updated "What's in the box".
+
 ## [0.1.1] - 2026-07-13
 
 ### Added

@@ -42,6 +42,15 @@ Tripwire families that earned their keep in one measured setup:
 | Big payload lines | many transcript lines over ~400kB | screenshots / large tool results accumulating in context |
 | Bucket share | cheap-model share of subagent output falls below a floor | mechanical work routed to the expensive model (but see the caveat below) |
 | Per-tool error rate | a tool's error rate exceeds ~10% | every error is a full-context call that bought nothing |
+| Main-loop output share | the orchestrator's share of total output tokens exceeds a ceiling (e.g. 50%) | work being done inline in the main loop that should have been dispatched to subagents |
+
+One structural rule keeps the pipeline honest as it grows: **a single source
+of truth**. If a second tool grows up that parses the transcripts directly
+(an ad-hoc audit script, a per-session cost breakdown), fold it into the same
+database instead. Two independent parsers of the same source will eventually
+disagree, and when they do you will not know which one is lying. In the setup
+this document comes from, the standalone audit tool was rewritten to read the
+collector's database - the drill-down views stayed, the second parser went.
 
 ## 2. A dashboard without a data cutoff will eventually lie to you
 
@@ -67,6 +76,44 @@ A second caveat on the bucket-share tripwire specifically: a low cheap-model
 share is only a leak if mechanical legs *existed* that day. A day of pure
 judgment work (reviews, design decisions) correctly routes everything to the
 strong model. Check what was dispatched before concluding anything.
+
+### The same failure family, three more ways
+
+An independent cross-family review of the setup above found three more
+instances of the same defect - **a reading that is stale or incomplete while
+looking authoritative** - none of which the freshness line alone would have
+caught:
+
+- **Parser upgrades silently skip old files.** An incremental collector that
+  resumes by byte offset never re-reads a file it has already consumed. Add a
+  new parsing rule (a new field, a new regex) without bumping the schema
+  version, and every historical file keeps its old, ruleless parse forever.
+  In the measured case a newly added verdict extractor was missing 86% of the
+  historical events it should have matched - and the report printed the
+  partial number without any error. Corollary for migrations: never drop a
+  table that cannot be rebuilt from the source files (point-in-time gauge
+  snapshots cannot; event rows can).
+- **Point-in-time gauges can be stale while event data is fresh.** The
+  auto-collection fix above refreshed the event tables but not the gauge
+  snapshots, so one section of the report could lag the rest. A header
+  freshness line does not cover this case.
+- **Offender listings without timestamps mix live and dead.** A mega-session
+  tripwire that lists the heaviest windows will happily mix a session that is
+  taxing you right now with one that closed yesterday - and the reader cannot
+  tell which is which, so either they chase a ghost or they ignore the list.
+
+The family rules that came out, each mechanical:
+
+1. Every new parsing rule in an incremental collector **bumps the schema
+   version** (forcing a full rescan) or ships an explicit backfill.
+2. Every section of a report **states its own data cutoff**, not just the
+   header.
+3. Every offender row carries a **last-activity timestamp**, so live and
+   stale entries are distinguishable at a glance.
+4. A gauge must measure **the same unit and semantic as the threshold that
+   enforces it**. (A cap of 25 index *entries* watched by a gauge counting
+   total *lines* fires falsely on a 25-line file with 16 entries - an alarm
+   that cries wolf gets disabled, which is worse than no alarm.)
 
 ## 3. The mega-session tax, and session rotation
 
@@ -129,6 +176,13 @@ Rules for the orchestrator side, each anchored to a measured failure mode:
   schema once first (or caching it to a file) would have cut a third of that
   tool's spend. Watch per-tool error rates; they are efficiency bugs, not
   just reliability bugs.
+- **Routing rules get an observation window and a sunset clause.** A rule
+  that routes work to a cheap bucket only pays if the bucket is actually
+  used. When adding one, set a date to check the scorecard; if the bucket's
+  share is still near zero, remove the rule instead of keeping it
+  aspirationally. A routing table the data contradicts is instrumentation
+  debt - readers (including future orchestrators) will keep paying attention
+  to a lane nothing drives in.
 
 ## 5. What this buys, honestly
 

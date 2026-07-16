@@ -3,6 +3,19 @@
 All notable changes to this project are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] - 2026-07-16
+
+### Changed
+
+- **`docs/TOKEN-ECONOMY.md`** - expanded the stale-dashboard incident into
+  the full "stale or incomplete reading" defect family, from a cross-family
+  review of the same setup: incremental collectors must bump their schema
+  version (or backfill) on every new parsing rule; every report section
+  states its own data cutoff; offender rows carry last-activity timestamps;
+  gauges must share the unit and semantic of the threshold they feed. Added
+  the main-loop output-share tripwire, the single-source-of-truth rule for
+  measurement tooling, and sunset clauses for routing rules.
+
 ## [0.2.0] - 2026-07-16
 
 ### Added
